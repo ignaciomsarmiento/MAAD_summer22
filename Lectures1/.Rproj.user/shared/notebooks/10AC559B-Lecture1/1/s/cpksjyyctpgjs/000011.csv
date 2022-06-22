@@ -1,0 +1,5 @@
+"0","require(""leaflet"")"
+"2","Loading required package: leaflet
+"
+"0","m <- leaflet() %>% "
+"0","  setView(lng = -74.066391, lat = 4.601590, zoom = 12)"

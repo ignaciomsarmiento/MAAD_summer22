@@ -1,0 +1,707 @@
+---
+title: "Lecture 1: Spatial Data"
+author: 
+  - "Ignacio Sarmiento Barbieri"
+date: "21 de Junio, 2022"
+output:
+  xaringan::moon_reader:
+    seal: false # saco filmina de inicio
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      ratio: 191:100
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      beforeInit: "https://platform.twitter.com/widgets.js"
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(xaringanExtra)
+library(tidyverse)
+library(knitr)
+#library(icon)
+library(nomnoml)
+#library(countdown)
+# xaringanExtra::use_logo(
+#   image_url = "https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/xaringan.png"
+# )
+xaringanExtra::use_panelset()
+xaringanExtra::use_broadcast()
+xaringanExtra::use_share_again()
+xaringanExtra::style_share_again(share_buttons = c("twitter", "linkedin"))
+xaringanExtra::use_tachyons()
+xaringanExtra::use_fit_screen()
+xaringanExtra::use_tile_view() # O
+xaringanExtra::use_scribble()
+style_mono_accent(
+  base_color = "#af2433",
+  background_color = "#ffffff",
+  inverse_background_color = "#af2433",
+  header_color = "#af2433",
+  inverse_header_color = "#ffffff", 
+  inverse_text_color = "#ffffff",
+  code_inline_color = "#af2433",
+  link_color= "#af2433",
+  footnote_color =  "#af2433",
+  text_font_size = "30px",
+  header_font_google = google_font("Times", "Regular", "500"),
+  text_font_google   = google_font("Darker Grotesque", "500"),
+  code_font_google   = google_font("Fira Mono"),
+  code_font_size   = "20px"
+)
+require(kableExtra,quietly=TRUE)
+require(tidyverse,quietly=TRUE)
+require(lubridate,quietly=TRUE)
+require(plotly,quietly=TRUE)
+require(scales,quietly=TRUE)
+```
+
+
+
+class: center, middle
+
+
+#  Datos Espaciales
+
+
+### Ignacio Sarmiento-Barbieri
+
+---
+# Motivación
+
+```{r , echo = FALSE, out.width=700, fig.align='center'}
+knitr::include_graphics("figures/blumenstock_fig2.png")
+```
+
+---
+# Tipos de Datos Espaciales
+
+Los datos espaciales vienen en muchas "formas" y "tamaños", los tipos más comunes de datos espaciales son:
+
+- **Punto**
+
+- **Líneas**
+
+- **Polígonos**
+
+- **Grillas (*o raster*)**
+
+
+---
+# Types of Spatial Data: Points
+
+
+```{r , echo = FALSE, out.height=500,out.width=500, fig.align='center'}
+  knitr::include_graphics("figures/albouy_et_al_fig1.png")
+```
+
+Fuente: Albouy, Christensen & Sarmiento-Barbieri (2022)
+
+
+
+
+---
+# Types of Spatial Data: Lines
+
+
+```{r , echo = FALSE, out.width=500, fig.align='center'}
+  knitr::include_graphics("figures/safe_passage.png")
+```
+
+
+
+
+
+---
+# Types of Spatial Data: Polygons
+
+
+```{r , echo = FALSE, out.height=450, fig.align='center'}
+  knitr::include_graphics("figures/upz_1.png")
+```
+  Fuente: https://datosabiertos.bogota.gov.co/dataset/unidad-de-planeamiento-bogota-d-c
+
+
+
+---
+# Types of Spatial Data: Combination
+
+.pull-left[
+```{r , echo = FALSE, out.width=700, fig.align='center'}
+  knitr::include_graphics("figures/ZIP_A.png")
+```
+]
+
+.pull-right[
+```{r , echo = FALSE, out.width=700, fig.align='center'}
+  knitr::include_graphics("figures/ZIP_B.png")
+```
+]
+Fuente: Christensen,Sarmiento-Barbieri  & Timmins (2020)
+
+
+
+---
+# Types of Spatial Data: Rasters
+
+
+```{r , echo = FALSE, out.width=400, fig.align='center'}
+  knitr::include_graphics("figures/NewYork-1.png")
+```
+Fuente: https://data.cityofnewyork.us/Environment/NYCCAS-Air-Pollution-Rasters/q68s-8qxv
+
+
+
+---
+# Reading and Mapping spatial data in R
+## Shapefiles
+
+Main files
+
+  -  `file.shp`
+  -  `file.shx`
+  -  `file.dbf`
+
+Other files
+
+  -  `file.prj`
+  - `file.sbn` , `file.sbx`
+  -  `file.shp.xml`
+    
+
+---
+# Reading and Mapping spatial data in R
+## GeoJSON
+
+
+
+```{r, eval=FALSE}
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-74.066391, 4.601590]
+  },
+  "properties": {
+    "name": "Universidad de Los Andes"
+  }
+}
+```
+
+
+
+---
+## Reading shapefiles in R
+
+
+- Basic Packages: 
+  - Read and handle spatial data
+```{r}
+require("sf")
+```
+  - Data wrangling and plotting
+```{r}
+require("tidyverse")
+```
+  -  File referencing in project-oriented workflows
+```{r}
+require("here")
+```
+---
+## Reading shapefiles in R
+
+```{r}
+bars<-st_read(here("egba/EGBa.shp"))
+```
+---
+## Visualizing Points
+
+.pull-left[
+```{r plot_bars, eval=FALSE, cache=TRUE}
+ggplot()+
+  geom_sf(data=bars) +
+  theme_bw() +
+  theme(axis.title =element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size=6))
+```
+]
+
+.pull-right[
+```{r plot_bars, ref.label="plot_bars", echo=FALSE, cache=TRUE}
+```
+]
+
+---
+## Reading shapefiles in R
+
+```{r}
+colegios<-st_read(here("colegios_bogota.json"))
+```
+---
+## Visualizing Points
+
+.pull-left[
+```{r plot_col, eval=FALSE, cache=TRUE}
+ggplot()+
+  geom_sf(data=colegios) +
+  theme_bw() +
+  theme(axis.title =element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size=6))
+```
+]
+
+.pull-right[
+```{r plot_col_out, ref.label="plot_col", echo=FALSE, cache=TRUE}
+```
+]
+
+---
+## Visualizing Lines
+
+.pull-left[
+```{r plot-label1, eval=FALSE, cache=TRUE}
+ciclovias<-read_sf(here("Ciclovia/Ciclovia.shp"))
+
+ggplot()+
+  geom_sf(data=ciclovias) +
+  theme_bw() +
+  theme(axis.title =element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size=6))
+```
+]
+
+.pull-right[
+```{r plot-label-out1, ref.label="plot-label1", echo=FALSE, cache=TRUE}
+```
+]
+
+
+---
+## Visualizing Polygons
+
+.pull-left[
+```{r plot-label2, eval=FALSE, cache=TRUE}
+upla<-read_sf(here("upla/UPla.shp"))
+
+ggplot()+
+  geom_sf(data=upla, aes(fill = UPlArea)) +
+  theme_bw() +
+  theme(axis.title =element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size=6))
+```
+]
+
+.pull-right[
+```{r plot-label-out2, ref.label="plot-label2", echo=FALSE, cache=TRUE}
+```
+]
+
+---
+## Interactive Viz
+
+.pull-left[
+```{r plot_leaflet_1, message=FALSE, warning=FALSE, cache=TRUE}
+require("leaflet")
+m <- leaflet() %>% 
+  setView(lng = -74.066391, lat = 4.601590, zoom = 12)
+```
+]
+
+.pull-right[
+```{r plot_leaflet_1_out, cache=TRUE}
+m %>% addTiles()
+```
+]
+
+---
+## Interactive Viz
+
+```{r plot_leaflet_3, eval=FALSE, message=FALSE, warning=FALSE, cache=TRUE, include=TRUE}
+
+m %>% addProviderTiles(providers$Stamen.Toner)
+
+
+m %>% addProviderTiles(providers$OpenTopoMap)
+
+#Add Polygons
+leaflet(upla) %>% 
+   addTiles() %>% 
+  addPolygons()
+
+#Add labels
+leaflet(upla) %>% 
+   addTiles() %>% 
+  addPolygons(label = upla$UPlNombre)
+```
+
+For more options http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+
+---
+## Open Street Data
+
+```{r}
+require("osmdata")
+
+# get avaliables values for amenity
+available_tags("amenity")
+available_tags("building")
+available_tags("landuse")
+```
+---
+## Open Street Data
+
+```{r}
+# get bbox
+getbb("Bogotá Colombia")
+
+
+# get osm data
+osm = opq(bbox = getbb("Bogotá Colombia")) %>%
+      add_osm_feature(key = "amenity", value = "bar") %>%
+      #add_osm_feature(key = "amenity", value = "bus_station") %>%
+      #add_osm_feature(key = "amenity", value = "restaurant") %>%
+      osmdata_sf()
+osm %>% class()
+```
+---
+## Open Street Data
+
+```{r}
+osm
+```
+---
+## Open Street Data
+
+```{r plot_leaflet_osm_out, message=FALSE, warning=FALSE, eval=TRUE, cache=TRUE}
+# get sf object
+amenities = osm$osm_points %>% select(osm_id,amenity)
+# plot data
+leaflet() %>% 
+  addTiles() %>% 
+  addCircleMarkers(data=amenities , weight=1 , col="green")
+```
+
+
+---
+# The earth ain't flat
+
+
+```{r , echo = FALSE, out.width=800, fig.align='center'}
+  knitr::include_graphics("figures/world-1.png")
+```
+
+
+---
+# The earth ain't flat
+
+
+```{r , echo = FALSE, out.width=800, fig.align='center'}
+  knitr::include_graphics("figures/Mercator.png")
+```
+
+---
+# Which projection should I choose?
+
+
+
+- “There exist no all-purpose projections, all involve distortion when far from the center of the specified frame” (Bivand, Pebesma, and Gómez-Rubio 2013)
+
+  -  Geographic coordinate systems: coordinate systems that span the entire globe (e.g. latitude / longitude).
+  
+  - Projected coordinate systems: coordinate systems that are localized to minimize visual distortion in a particular region (e.g. Robinson, UTM, State Plane)
+
+---
+# Which projection should I choose?
+  
+  - In some cases, it is not something that we are free to decide: “often the choice of projection is made by a public mapping agency” (Bivand, Pebesma, and Gómez-Rubio 2013).
+
+  -  This means that when working with local data sources, it is likely preferable to work with the CRS in which the data was provided.
+
+  - For Bogotá the IGAC promotes the adoption of MAGNA-SIRGAS. EPSG code: 4626
+
+
+---
+# Creating Objects
+
+.pull-left[
+```{r plot-label4, eval=FALSE}
+db<-data.frame(place=c("Uniandes","Banco de La Republica"),lat=c(4.601590,4.602151), 
+               long=c(-74.066391,-74.072350), 
+               nudge_y=c(-0.001,0.001))
+
+db<-db %>% mutate(latp=lat,longp=long)
+
+db<-st_as_sf(db,coords=c('longp','latp'),
+             crs=4326)
+
+
+
+ggplot()+
+  geom_sf(data=upla %>% filter(UPlNombre%in%c("LA CANDELARIA","LAS NIEVES")), fill = NA) +
+  geom_sf(data=db, col="red") +
+  geom_label(data = db, aes(x = long, y = lat, label = place), 
+        size = 3, col = "black", fontface = "bold", nudge_y =db$nudge_y) +
+  theme_bw() +
+  theme(axis.title =element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size=6))
+```
+]
+
+.pull-right[
+```{r plot-label-out, ref.label="plot-label4", echo=FALSE}
+```
+]
+
+---
+# Projections
+
+```{r}
+st_distance(db)
+```
+```{r , echo = FALSE, out.width=400, out.height=300, fig.align='center'}
+  knitr::include_graphics("figures/distance_google_maps.png")
+```
+---
+# Projections
+
+```{r, eval=FALSE}
+st_distance(db,ciclovias)
+```
+
+---
+# Projections
+
+```{r}
+st_crs(ciclovias)
+```
+
+---
+# Projections
+```{r}
+ciclovias<-st_transform(ciclovias, 4686)
+st_crs(ciclovias)
+```
+
+
+---
+# Projections
+
+```{r}
+db<-st_transform(db, 4686)
+st_distance(db,ciclovias)
+```
+
+---
+# Projections
+.pull-left[
+```{r ciclovias, eval=FALSE}
+ggplot()+
+  geom_sf(data=ciclovias[8,], fill = NA) +
+  geom_sf(data=db, col="red") +
+  theme_bw() +
+  theme(axis.title =element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size=6))
+```
+]
+
+.pull-right[
+```{r ciclovias, ref.label="ciclovias", echo=FALSE}
+```
+]
+---
+class: center, middle
+
+
+#  Point Process Methods
+---
+#  Questions
+
+- Are the points spread uniformly over the survey region? 
+
+- Are the points randomly scattered? 
+
+- Is there evidence of clustering? 
+
+- Does the density of points depend on an explanatory variable? 
+
+--
+
+To give a sensible answer we must recognise that these questions are not about the points themselves, but about the way the points were generated.
+---
+
+```{r , echo = FALSE, out.width=900,out.height=600, fig.align='center'}
+  knitr::include_graphics("figures/point_realizations.png")
+```
+---
+# Complete spatial randomness (CSR)
+
+Properties:
+
+- homogeneity
+
+- independence
+
+---
+# Simulation of CSR
+
+```{r }
+require("spatstat")
+```
+
+
+---
+class: center
+# Simulation of CSR
+
+```{r }
+set.seed(10101)
+plot(rpoispp(50))
+```
+
+
+---
+class: center
+# Simulation of CSR
+
+```{r }
+plot(rpoispp(100,nsim=6))
+```
+---
+# Inhomogeneous Poisson process
+
+Properties:
+
+- intensity function
+- independence
+- Poisson-distributed counts
+
+---
+# Simulation Inhomogeneous Poisson process
+.pull-left[
+```{r}
+lambda <- function(x,y) { 100 * (x^2+y) } 
+X <- rpoispp(lambda, win=square(1))
+```
+]
+.pull-right[
+```{r}
+plot(X)
+```
+]
+---
+# Estimating Homogeneous Intensity
+
+
+```{r}
+npoints(swedishpines)/area(Window(swedishpines))
+```
+
+```{r}
+intensity(swedishpines)
+```
+
+```{r}
+unitname(swedishpines)
+```
+
+---
+# Estimating Homogeneous Intensity
+
+```{r}
+summary(swedishpines)
+```
+
+
+---
+# Estimating Homogeneous Intensity
+
+
+```{r}
+intensity(rescale(swedishpines))
+```
+
+---
+# Estimating Homogeneous Intensity
+
+```{r}
+X <- rescale(swedishpines)
+lam <- intensity(X)
+(sdX <- sqrt(lam/area(Window(X))))
+```
+
+---
+# Quadrant Counting
+
+
+```{r}
+swp <- rescale(swedishpines)
+Q3 <- quadratcount(swp, nx=3, ny=3)
+Q3
+```
+
+---
+# Quadrant Counting
+
+
+```{r echo=FALSE}
+Q3plus <- layered(Q3, swp, 
+                  plotargs=list(list(cex=2), list(pch="+")))
+L3 <- intensity(Q3, image=TRUE)
+
+pa <- function(i) { if(i == 1) list() else list(box=TRUE, ribargs=list(las=1)) }
+plot(solist(Q3plus, L3), main="", main.panel="", mar.panel=0, hsep=1,
+     panel.args=pa, equal.scales=TRUE)
+```
+
+
+---
+# Quadrant Counting test for homogeneity
+
+```{r}
+intensity(Q3)
+```
+
+---
+# Quadrant Counting test for homogeneity
+
+```{r}
+tS <- quadrat.test(swp, 3,3)
+tS
+```
+
+```{r}
+tS$p.value
+```
+
+---
+# Quadrant Counting test for homogeneity
+```{r, echo=FALSE}
+plot(swp, pch=16, cols="grey", main="")
+plot(tS, add=TRUE,cex=1.1)
+```
+
+---
+
+```{r info}
+sessionInfo()
+```
+

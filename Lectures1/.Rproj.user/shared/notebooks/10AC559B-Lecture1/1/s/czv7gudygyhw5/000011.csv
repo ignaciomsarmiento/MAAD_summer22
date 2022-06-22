@@ -1,0 +1,6 @@
+"0","db<-st_as_sf(db,coords=c('longp','latp'),
+             crs=4326)
+"
+"2","Error in st_as_sf(db, coords = c(""longp"", ""latp""), crs = 4326) : 
+  could not find function ""st_as_sf""
+"

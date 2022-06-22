@@ -1,0 +1,63 @@
+---
+title: "Spatial Data Analysis"
+author: "Ignacio Sarmiento-Barbieri"
+date: '2022-06-20'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+require("spatstat")
+data(japanesepines)
+summary(japanesepines)
+```
+
+
+
+
+###################################################
+### code chunk number 8: sppa.Rnw:258-259
+###################################################
+```{r}
+library(maptools)
+```
+
+###################################################
+### code chunk number 9: sppa.Rnw:261-263
+###################################################
+```{r}
+spjpines <- as(japanesepines, "SpatialPoints")
+summary(spjpines)
+```
+
+
+```{r}
+npoints(swedishpines)/area(Window(swedishpines))
+```
+
+
+```{r}
+unitname(swedishpines)
+```
+
+```{r}
+summary(swedishpines)
+```
+
+
+```{r}
+intensity(rescale(swedishpines))
+```
+
+
+```{r}
+X <- rescale(swedishpines)
+lam <- intensity(X)
+(sdX <- sqrt(lam/area(Window(X))))
+```
