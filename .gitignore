@@ -6,6 +6,8 @@ Lectures1/ignore/*
 
 ### macOS ###
 # General
+
+.DS_Store 
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -93,3 +95,4 @@ rsconnect/
 /*_files/
 
 # End of https://www.toptal.com/developers/gitignore/api/r,macos
+Lectures1/.DS_Store
