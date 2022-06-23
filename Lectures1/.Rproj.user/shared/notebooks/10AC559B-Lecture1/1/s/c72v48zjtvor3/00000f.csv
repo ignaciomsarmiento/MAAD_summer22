@@ -1,6 +1,0 @@
-"0","leaflet(upla) %>% "
-"0","  addProviderTiles(providers$OpenTopoMap) %>% "
-"0","  addPolygons()"
-"2","Error in structure(list(options = options), leafletData = data) : 
-  object 'upla' not found
-"
