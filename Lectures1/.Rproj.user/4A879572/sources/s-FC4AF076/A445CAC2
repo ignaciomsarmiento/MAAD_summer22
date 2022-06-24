@@ -3,7 +3,7 @@
     "path": "~/Dropbox/Teaching/2022/SpatialDataEng/Lectures/Lectures1/Lecture1.Rmd",
     "project_path": "Lecture1.Rmd",
     "type": "r_markdown",
-    "hash": "1907710675",
+    "hash": "0",
     "contents": "",
     "dirty": true,
     "created": 1655850725542.0,
@@ -12,8 +12,8 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "457,2",
-        "scrollLine": "455",
+        "cursorPosition": "344,15",
+        "scrollLine": "331",
         "last_setup_crc32": "FC4AF076e907aa8d"
     },
     "folds": "",
