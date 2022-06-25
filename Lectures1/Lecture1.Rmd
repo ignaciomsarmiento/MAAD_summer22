@@ -294,6 +294,7 @@ ggplot()+
 
 .pull-left[
 ```{r plot-label2, eval=FALSE, cache=TRUE}
+require("here")
 upla<-read_sf(here("upla/UPla.shp"))
 
 ggplot()+
@@ -440,6 +441,8 @@ leaflet() %>%
 
 .pull-left[
 ```{r plot-label4, eval=FALSE}
+require("sf")
+require("tidyverse")
 db<-data.frame(place=c("Uniandes","Banco de La Republica"),lat=c(4.601590,4.602151), 
                long=c(-74.066391,-74.072350), 
                nudge_y=c(-0.001,0.001))
