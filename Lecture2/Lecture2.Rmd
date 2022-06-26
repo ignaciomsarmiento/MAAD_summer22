@@ -1,5 +1,5 @@
 ---
-title: "Lecture 1: Spatial Data"
+title: "Lecture 2: Spatial Pont Process"
 author: 
   - "Ignacio Sarmiento Barbieri"
 date: "21 de Junio, 2022"
