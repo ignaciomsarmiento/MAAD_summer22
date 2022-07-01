@@ -74,6 +74,7 @@ summary(sar)
 # Chicago -----------------------------------------------------------------
 # # -----------------------------------------------------------------------
 chi.poly<-read_sf(here("foreclosures/foreclosures.shp"))
+st_crs(chi.poly)
 st_crs(chi.poly)<-4326 #WGS84 set it in the map
 chi.poly<-st_transform(chi.poly,26916) #reproject planarly
 list.queen<-poly2nb(chi.poly, queen=TRUE) 
@@ -95,6 +96,7 @@ sar.chi<-lagsarlm(violent~est_fcs_rt+bls_unemp, data=chi.poly, W)
 summary(sar.chi)
 
 impacts(sar.chi, listw=W)
+
 
 
 LM<-lm.LMtests(chi.ols, W, test="all")
