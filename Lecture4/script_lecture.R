@@ -25,8 +25,10 @@ require("spatialreg")
 
 # Load data -----------------------------------------------------------
 italy<-read_sf(here("italy/Reg2014_ED50g/Reg2014_ED50_g.shp"))
+# plot(italy)
 st_crs(italy)
 dta<-openxlsx::read.xlsx(here("italy/okum.xlsx"))
+View(dta)
 
 italy<-italy %>% left_join(dta)
 
@@ -37,20 +39,21 @@ ggplot(italy,aes(x=P,y=U)) +
   theme_bw()
 
 
-
-
 ols<-lm(U~P, data=dta)
 summary(ols)
 
 #distance
 coord_regions<-st_centroid(st_geometry(italy))
+View(coord_regions)
 reg_nb_dist<-dnearneigh(coord_regions, 0,380000) #380km
+View(reg_nb_dist )
 W<-nb2listw(reg_nb_dist, glist=NULL, style="W")
 W$neighbours
 
 moran.lm<-lm.morantest(ols, W, alternative="two.sided")
 moran.lm
 
+#W_knn<-knearneigh(coord_regions, k=5, use_kd_tree=TRUE)
 
 #Contiguity
 reg_nb_queen<-poly2nb(italy, queen=TRUE) 
@@ -62,10 +65,9 @@ moran.lm<-lm.morantest(ols, W_queen, alternative="two.sided")
 moran.lm
 
 #SAR model
-
 sar<-spautolm(P~1,dta,W_queen)
 summary(sar)
-
+?spautolm
 
 
 # # -----------------------------------------------------------------------
