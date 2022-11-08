@@ -1,65 +1,22 @@
 ---
-title: "Lecture 1: Spatial Data"
-author: 
-  - "Ignacio Sarmiento Barbieri"
-date: "21 de Junio, 2022"
-output:
-  xaringan::moon_reader:
-    seal: false # saco filmina de inicio
-    lib_dir: libs
-    css: xaringan-themer.css
-    nature:
-      ratio: 191:100
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-      beforeInit: "https://platform.twitter.com/widgets.js"
+title: "Spatial"
+author: "Ignacio Sarmiento-Barbieri"
+output: 
+  pdf_document:
+    keep_tex: yes
 ---
-
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
-library(xaringanthemer)
-library(xaringanExtra)
+
 library(tidyverse)
 library(knitr)
-#library(icon)
-library(nomnoml)
-#library(countdown)
-# xaringanExtra::use_logo(
-#   image_url = "https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/xaringan.png"
-# )
-xaringanExtra::use_panelset()
-xaringanExtra::use_broadcast()
-xaringanExtra::use_share_again()
-xaringanExtra::style_share_again(share_buttons = c("twitter", "linkedin"))
-xaringanExtra::use_tachyons()
-xaringanExtra::use_fit_screen()
-xaringanExtra::use_tile_view() # O
-xaringanExtra::use_scribble()
-style_mono_accent(
-  base_color = "#af2433",
-  background_color = "#ffffff",
-  inverse_background_color = "#af2433",
-  header_color = "#af2433",
-  inverse_header_color = "#ffffff", 
-  inverse_text_color = "#ffffff",
-  code_inline_color = "#af2433",
-  link_color= "#af2433",
-  footnote_color =  "#af2433",
-  text_font_size = "30px",
-  header_font_google = google_font("Times", "Regular", "500"),
-  text_font_google   = google_font("Darker Grotesque", "500"),
-  code_font_google   = google_font("Fira Mono"),
-  code_font_size   = "20px"
-)
 require(kableExtra,quietly=TRUE)
 require(tidyverse,quietly=TRUE)
 require(lubridate,quietly=TRUE)
-require(plotly,quietly=TRUE)
 require(scales,quietly=TRUE)
 ```
 
@@ -315,6 +272,41 @@ ggplot()+
 
 
 ---
+## Open Street Data
+
+```{r}
+require("osmdata")
+
+# get avaliables values for amenity
+available_tags("amenity")
+available_tags("building")
+available_tags("landuse")
+```
+---
+## Open Street Data
+
+```{r}
+# get bbox
+getbb("Bogotá Colombia")
+
+
+# get osm data
+osm = opq(bbox = getbb("Bogotá Colombia")) %>%
+      add_osm_feature(key = "amenity", value = "bar") %>%
+      #add_osm_feature(key = "amenity", value = "bus_station") %>%
+      #add_osm_feature(key = "amenity", value = "restaurant") %>%
+      osmdata_sf()
+osm %>% class()
+```
+---
+## Open Street Data
+
+```{r}
+osm
+```
+
+
+---
 # The earth ain't flat
 
 
@@ -446,177 +438,6 @@ ggplot()+
 ```{r ciclovias, ref.label="ciclovias", echo=FALSE}
 ```
 ]
----
-class: center, middle
-
-
-#  Point Process Methods
----
-#  Questions
-
-- Are the points spread uniformly over the survey region? 
-
-- Are the points randomly scattered? 
-
-- Is there evidence of clustering? 
-
-- Does the density of points depend on an explanatory variable? 
-
---
-
-To give a sensible answer we must recognise that these questions are not about the points themselves, but about the way the points were generated.
----
-
-```{r , echo = FALSE, out.width=900,out.height=600, fig.align='center'}
-  knitr::include_graphics("figures/point_realizations.png")
-```
----
-# Complete spatial randomness (CSR)
-
-Properties:
-
-- homogeneity
-
-- independence
-
----
-# Simulation of CSR
-
-```{r }
-require("spatstat")
-```
-
-
----
-class: center
-# Simulation of CSR
-
-```{r }
-set.seed(10101)
-plot(rpoispp(50))
-```
-
-
----
-class: center
-# Simulation of CSR
-
-```{r }
-plot(rpoispp(100,nsim=6))
-```
----
-# Inhomogeneous Poisson process
-
-Properties:
-
-- intensity function
-- independence
-- Poisson-distributed counts
-
----
-# Simulation Inhomogeneous Poisson process
-.pull-left[
-```{r}
-lambda <- function(x,y) { 100 * (x^2+y) } 
-X <- rpoispp(lambda, win=square(1))
-```
-]
-.pull-right[
-```{r}
-plot(X)
-```
-]
----
-# Estimating Homogeneous Intensity
-
-
-```{r}
-npoints(swedishpines)/area(Window(swedishpines))
-```
-
-```{r}
-intensity(swedishpines)
-```
-
-```{r}
-unitname(swedishpines)
-```
-
----
-# Estimating Homogeneous Intensity
-
-```{r}
-summary(swedishpines)
-```
-
-
----
-# Estimating Homogeneous Intensity
-
-
-```{r}
-intensity(rescale(swedishpines))
-```
-
----
-# Estimating Homogeneous Intensity
-
-```{r}
-X <- rescale(swedishpines)
-lam <- intensity(X)
-(sdX <- sqrt(lam/area(Window(X))))
-```
-
----
-# Quadrant Counting
-
-
-```{r}
-swp <- rescale(swedishpines)
-Q3 <- quadratcount(swp, nx=3, ny=3)
-Q3
-```
-
----
-# Quadrant Counting
-
-
-```{r echo=FALSE}
-Q3plus <- layered(Q3, swp, 
-                  plotargs=list(list(cex=2), list(pch="+")))
-L3 <- intensity(Q3, image=TRUE)
-
-pa <- function(i) { if(i == 1) list() else list(box=TRUE, ribargs=list(las=1)) }
-plot(solist(Q3plus, L3), main="", main.panel="", mar.panel=0, hsep=1,
-     panel.args=pa, equal.scales=TRUE)
-```
-
-
----
-# Quadrant Counting test for homogeneity
-
-```{r}
-intensity(Q3)
-```
-
----
-# Quadrant Counting test for homogeneity
-
-```{r}
-tS <- quadrat.test(swp, 3,3)
-tS
-```
-
-```{r}
-tS$p.value
-```
-
----
-# Quadrant Counting test for homogeneity
-```{r, echo=FALSE}
-plot(swp, pch=16, cols="grey", main="")
-plot(tS, add=TRUE,cex=1.1)
-```
 
 ---
 
